@@ -6,7 +6,7 @@ import instagram from "./../components/icons/ri_instagram-fill.svg";
 import youtube from "./../components/icons/mdi_youtube.svg";
 import telephone from "./../components/icons/ic_baseline-phone.svg";
 import email from "./../components/icons/email.svg";
-import Forms from "./../Pages/Forms";
+import Forms from "./../pages/Forms";
 import Link from "next/link";
 
 export default function Footer() {
@@ -47,7 +47,10 @@ export default function Footer() {
               </li>
 
               <li className="mb-1">
-                <Link href="/about-us" className="hover:text-red-700 transition">
+                <Link
+                  href="/about-us"
+                  className="hover:text-red-700 transition"
+                >
                   Biz haqimizda
                 </Link>
               </li>
@@ -57,7 +60,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="mb-1">
-                <Link href="/favorites" className="hover:text-red-700 transition">
+                <Link
+                  href="/favorites"
+                  className="hover:text-red-700 transition"
+                >
                   Sevimlilar
                 </Link>
               </li>
