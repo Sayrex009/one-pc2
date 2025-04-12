@@ -25,7 +25,7 @@ export default function ComparePage() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://pc.repid.uz/api/v1/product/category/list/"
+          "https://pc.onepc.uz/api/v1/product/category/list/"
         );
         if (response.ok) {
           const data = await response.json();
@@ -54,7 +54,7 @@ export default function ComparePage() {
         await Promise.all(
           compareList.map(async (product) => {
             const response = await fetch(
-              `https://pc.repid.uz/api/v1/product/product/${product.id}/`
+              `https://pc.onepc.uz/api/v1/product/product/${product.id}/`
             );
             if (response.ok) {
               const data = await response.json();

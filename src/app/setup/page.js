@@ -17,7 +17,7 @@ export default function SetupPage() {
 
   // Получение списка категорий
   useEffect(() => {
-    fetch("https://pc.repid.uz/api/v1/product/category/list/")
+    fetch("https://pc.onepc.uz/api/v1/product/category/list/")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((error) => console.error("Ошибка загрузки категорий:", error));
@@ -29,7 +29,7 @@ export default function SetupPage() {
     if (activeCategory === null) return; // Проверяем, выбрана ли категория
 
     fetch(
-      `https://pc.repid.uz/api/v1/product/category/${activeCategory}/?page=${currentPage}`
+      `https://pc.onepc.uz/api/v1/product/category/${activeCategory}/?page=${currentPage}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -82,7 +82,6 @@ export default function SetupPage() {
     <div>
       <Navbar />
 
-      {/* Хлебные крошки */}
       <div className="ml-28 max-w-[1320px] w-full px-5 mx-auto flex items-center gap-2 mt-10">
         <a className="text-sm md:text-lg text-gray-600" href="/">
           Bosh sahifa

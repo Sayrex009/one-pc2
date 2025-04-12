@@ -12,10 +12,10 @@ export default function Home() {
       <div>
         <Navbar/>
         <HomeKarusel/>
-          {/* <HomeDiscounted/> */}
-          {/* <ChegirmadagiMahsulotlar/> */}
+          <HomeDiscounted/>
+          <ChegirmadagiMahsulotlar/>
            <HomeYangiMahsulotlar/>
-           {/* <HomeTopProducts /> */}
+           <HomeTopProducts />
           <Footer/>
 
       </div>

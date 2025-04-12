@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
-import { FaShoppingCart } from "react-icons/fa";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { FaShoppingCart, FaCheck } from "react-icons/fa";
+import { AiOutlineHeart, AiFillHeart, AiOutlineFilter } from "react-icons/ai";
 import { GiScales } from "react-icons/gi";
 
 import icon_leave from "../../../components/icons/category-icon.svg";
@@ -25,6 +25,11 @@ export default function CategoryPage() {
   const [discount, setDiscount] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [recentlyAdded, setRecentlyAdded] = useState({
+    cart: null,
+    compare: null,
+  });
 
   useEffect(() => {
     setFavorites(JSON.parse(localStorage.getItem("favorites")) || []);
@@ -33,7 +38,7 @@ export default function CategoryPage() {
   }, []);
 
   useEffect(() => {
-    fetch("https://pc.repid.uz/api/v1/product/category/list/")
+    fetch("https://pc.onepc.uz/api/v1/product/category/list/")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((error) => console.error("Ошибка загрузки категорий:", error));
@@ -43,13 +48,13 @@ export default function CategoryPage() {
     if (!id) return;
 
     fetch(
-      `https://pc.repid.uz/api/v1/product/category/${id}/?page=${currentPage}`
+      `https://pc.onepc.uz/api/v1/product/category/${id}/?page=${currentPage}`
     )
       .then((res) => res.json())
       .then((data) => {
         console.log("Ответ от API:", data);
         setProducts(data.results || []);
-        setTotalPages(Math.ceil(data.count / (data.page_size || 10 + 10))); // Добавлен fallback
+        setTotalPages(Math.ceil(data.count / (data.page_size || 10 + 10)));
       })
       .catch((error) => console.error("Ошибка загрузки товаров:", error));
   }, [id, currentPage]);
@@ -65,36 +70,52 @@ export default function CategoryPage() {
 
   const addToCart = (product) => {
     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
-  
+
     if (!existingCart.some((item) => item.id === product.id)) {
-      const updatedCart = [...existingCart, {
-        id: product.id,
-        name_uz: product.name_uz, // Добавляем имя
-        main_image: product.main_image, // Добавляем изображение
-        price: product.price // Добавляем цену
-      }];
-      
+      const updatedCart = [
+        ...existingCart,
+        {
+          id: product.id,
+          name_uz: product.name_uz,
+          main_image: product.main_image,
+          price: product.price,
+        },
+      ];
+
       setCart(updatedCart);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
+      setRecentlyAdded({ ...recentlyAdded, cart: product.id });
+
+      // Reset the checkmark after 2 seconds
+      setTimeout(() => {
+        setRecentlyAdded((prev) => ({ ...prev, cart: null }));
+      }, 2000);
     }
   };
-  
 
   const addToCompare = (product) => {
     if (!compareList.some((item) => item.id === product.id)) {
       const updatedCompareList = [...compareList, product];
       setCompareList(updatedCompareList);
       localStorage.setItem("compare", JSON.stringify(updatedCompareList));
+      setRecentlyAdded({ ...recentlyAdded, compare: product.id });
+
+      // Reset the checkmark after 2 seconds
+      setTimeout(() => {
+        setRecentlyAdded((prev) => ({ ...prev, compare: null }));
+      }, 2000);
     }
   };
 
   const currentCategory = categories.find(
     (category) => category.id === Number(id)
   );
+
   const resetFilters = () => {
     setDiscount(false);
-    setPriceRange([0, 100000000]);
+    setPriceRange([0, 1000000]);
   };
+
   const filteredProducts = products.filter((product) => {
     const withinPriceRange =
       product.price >= priceRange[0] && product.price <= priceRange[1];
@@ -114,8 +135,25 @@ export default function CategoryPage() {
           {currentCategory ? currentCategory.name_uz : "Неизвестная категория"}
         </span>
       </div>
+
+      {/* Mobile Filter Button */}
+      <div className="md:hidden flex justify-center my-4 text-center">
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="flex items-center gap-2 w-[300px] h-[40px] justify-center bg-mainColor text-white rounded-md"
+        >
+          <AiOutlineFilter size={18} />
+          <span>Filter</span>
+        </button>
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
-        <aside className="bg-white p-4 w-64 lg:ml-[-105]">
+        {/* Filter Sidebar - Hidden on mobile unless toggled */}
+        <aside
+          className={`bg-white p-4 w-full md:w-64 lg:ml-[-115px] ${
+            showMobileFilters ? "block" : "hidden"
+          } md:block lg:ml-[-105]`}
+        >
           <div className="flex justify-between items-center border-b pb-2 mb-3">
             <h3 className="text-lg font-semibold">Filter</h3>
             <button onClick={resetFilters} className="text-red-500 text-sm">
@@ -123,37 +161,30 @@ export default function CategoryPage() {
             </button>
           </div>
 
-          {/* Чекбокс для скидки */}
+          {/* Discount Toggle */}
           <div>
             <div className="flex justify-between items-center md:w-72 md:pr-4 md:px-0 py-[14px] border-[#B4B4B4]">
               <h3 className="text-gray-800 font-semibold">Chegirma</h3>
-
-              {/* Контейнер переключателя */}
               <label className="relative lg:mr-10 w-16 h-7 flex items-center rounded-full p-1 cursor-pointer transition-all bg-gray-300">
-                {/* Скрытый чекбокс */}
                 <input
                   type="checkbox"
                   checked={discount}
                   onChange={() => setDiscount(!discount)}
                   className="sr-only peer"
                 />
-
-                {/* Фон переключателя, который меняет цвет при нажатии */}
                 <div className="absolute inset-0 w-full h-full bg-gray-300 rounded-full transition-all duration-300 peer-checked:bg-mainColor"></div>
-
-                {/* Двигающийся кружок */}
                 <div className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 peer-checked:translate-x-9"></div>
               </label>
             </div>
           </div>
 
-          {/* Ползунок цены */}
+          {/* Price Range */}
           <div className="mb-4 border-b-2 pb-4">
             <label className="block text-sm text-gray-700 mb-1">Narx:</label>
             <input
               type="range"
               min="0"
-              max="100000000000"
+              max="1000000000"
               value={priceRange[1]}
               onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
               className="w-full"
@@ -164,13 +195,12 @@ export default function CategoryPage() {
             </div>
           </div>
 
-          {/* Если нет доступных фильтров */}
           <p className="text-gray-500 text-sm">No filters available.</p>
         </aside>
 
         <div className="w-full md:w-3/4 cursor-pointer">
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:mr-[-120] md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 py-4">
+            <div className="grid grid-cols-2 lg:mr-[-120] md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6 py-4">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
@@ -195,55 +225,65 @@ export default function CategoryPage() {
                   <img
                     src={product.main_image ? product.main_image : imgNone.src}
                     alt={product.name_uz}
-                    className="w-full h-36 object-contain"
+                    className="w-full h-28 sm:h-36 object-contain"
                   />
 
-                  <h2 className="border-t-2 mt-4 text-sm sm:text-base truncate">
+                  <h2 className="border-t-2 mt-2 text-xs sm:text-sm truncate">
                     {product.name_uz}
                   </h2>
 
                   <div className="relative h-10 flex items-center">
-  {/* Цена всегда видна на мобильных, но скрывается при наведении на lg */}
-  <p
-    className="text-[#0C0C0C] text-sm sm:text-lg font-semibold transition-all duration-300 
-    lg:group-hover:opacity-0 lg:group-hover:translate-x-[-10px] opacity-100 hidden lg:block"
-  >
-    {product.price.toLocaleString()} UZS
-  </p>
+                    {/* Price - always visible on mobile */}
+                    <p className="text-[#0C0C0C] text-xs sm:text-sm font-semibold lg:group-hover:opacity-0 lg:group-hover:translate-x-[-10px] opacity-100 hidden lg:block">
+                      {product.price.toLocaleString()} UZS
+                    </p>
 
-  {/* Цена для мобильных (всегда видна) */}
-  <p className="text-[#0C0C0C] text-sm sm:text-lg font-semibold lg:hidden">
-    {product.price.toLocaleString()} UZS
-  </p>
+                    {/* Mobile price (always visible) */}
+                    <p className="text-[#0C0C0C] text-xs sm:text-sm font-semibold lg:hidden">
+                      {product.price.toLocaleString()} UZS
+                    </p>
 
-  <div
-    className="absolute right-0 right-0 flex gap-2 sm:gap-4 justify-start transition-all duration-300 
-    opacity-100 translate-x-0 lg:opacity-0 lg:translate-x-10 lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
-  >
-    <button
-      className="flex justify-center items-center w-10 h-10 sm:w-10 sm:h-10 border border-mainColor text-mainColor bg-white 
-      rounded-md shadow-md hover:bg-mainColor hover:text-white transition text-xs sm:text-sm"
-      onClick={(e) => {
-        e.stopPropagation();
-        addToCart(product);
-      }}
-    >
-      <FaShoppingCart size={18} />
-    </button>
+                    <div
+                      className="absolute right-0 flex gap-1 sm:gap-2 justify-start transition-all duration-300 
+                      opacity-100 translate-x-0 lg:opacity-0 lg:translate-x-10 lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
+                    >
+                      <button
+                        className="flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 border border-mainColor rounded-md shadow-md 
+                        hover:bg-mainColor hover:text-white transition"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                      >
+                        {recentlyAdded.cart === product.id ? (
+                          <FaCheck size={14} className="text-white" />
+                        ) : (
+                          <FaShoppingCart
+                            size={14}
+                            className="text-mainColor hover:text-white"
+                          />
+                        )}
+                      </button>
 
-    <button
-      className="flex items-center justify-center w-10 h-10 sm:w-10 sm:h-10 border text-mainColor border-mainColor rounded-md  
-      hover:bg-mainColor hover:text-white transition text-xs sm:text-sm"
-      onClick={(e) => {
-        e.stopPropagation();
-        addToCompare(product);
-      }}
-    >
-      <GiScales size={18} />
-    </button>
-  </div>
-</div>
-
+                      <button
+                        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-mainColor rounded-md  
+                        hover:bg-mainColor hover:text-white transition"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCompare(product);
+                        }}
+                      >
+                        {recentlyAdded.compare === product.id ? (
+                          <FaCheck size={14} className="text-white" />
+                        ) : (
+                          <GiScales
+                            size={14}
+                            className="text-mainColor hover:text-white"
+                          />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -255,10 +295,9 @@ export default function CategoryPage() {
         </div>
       </div>
 
-      {/* Пагинация */}
+      {/* Pagination */}
       {filteredProducts.length > 0 && (
         <div className="flex justify-center items-center gap-2 mt-8 mb-8">
-          {/* Кнопка "Назад" */}
           <button
             className={`px-4 py-2 text-black font-semibold border border-gray-400 rounded-md transition-all duration-300 ${
               currentPage === 1
@@ -271,21 +310,19 @@ export default function CategoryPage() {
             &lt;
           </button>
 
-          {/* Номера страниц */}
           {Array.from({ length: totalPages }, (_, index) => index + 1).map(
             (page) => {
-              // Показываем только текущую страницу и 2 страницы влево и вправо
               if (
-                page === 1 || // Всегда показываем первую страницу
-                page === totalPages || // Всегда показываем последнюю страницу
-                (page >= currentPage - 2 && page <= currentPage + 2) // Показываем страницы вокруг текущей
+                page === 1 ||
+                page === totalPages ||
+                (page >= currentPage - 2 && page <= currentPage + 2)
               ) {
                 return (
                   <button
                     key={page}
                     className={`px-4 py-2 font-semibold rounded-md transition-all duration-300 ${
                       currentPage === page
-                        ? "bg-mainColor text-white" // Активная страница (красная)
+                        ? "bg-mainColor text-white"
                         : "border border-gray-400 bg-white text-black hover:bg-gray-100"
                     }`}
                     onClick={() => setCurrentPage(page)}
@@ -295,7 +332,6 @@ export default function CategoryPage() {
                 );
               }
 
-              // Показываем "..." для скрытых страниц
               if (page === currentPage - 3 || page === currentPage + 3) {
                 return (
                   <span key={page} className="px-4 py-2 text-gray-500">
@@ -304,11 +340,10 @@ export default function CategoryPage() {
                 );
               }
 
-              return null; // Скрываем остальные страницы
+              return null;
             }
           )}
 
-          {/* Кнопка "Вперед" */}
           <button
             className={`px-4 py-2 text-black font-semibold border border-gray-400 rounded-md transition-all duration-300 ${
               currentPage === totalPages

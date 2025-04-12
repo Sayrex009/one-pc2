@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { FaCheck, FaShoppingCart } from "react-icons/fa";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import Imgnone from "./../../../components/icons/imagenone.png";
@@ -14,12 +15,16 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [cart, setCart] = useState([]);
+  const [showCheckmark, setShowCheckmark] = useState({
+    cart: false,
+    buyNow: false
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const productRes = await fetch(
-          `https://pc.repid.uz/api/v1/product/product/${id}/`
+          `https://pc.onepc.uz/api/v1/product/product/${id}/`
         );
         if (!productRes.ok) throw new Error("Mahsulot topilmadi");
         const productData = await productRes.json();
@@ -42,34 +47,38 @@ export default function ProductPage() {
     if (!product) return;
 
     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    // Проверяем, есть ли уже такой товар в корзине
     const existingItemIndex = existingCart.findIndex(
       (item) => item.id === product.id
     );
 
     if (existingItemIndex === -1) {
-      // Добавляем новый товар
       const newItem = {
         id: product.id,
         name_uz: product.name_uz,
         main_image: product.main_image
-          ? `https://pc.repid.uz${product.main_image}`
+          ? `https://pc.onepc.uz${product.main_image}`
           : Imgnone.src,
         price: product.price,
-        quantity: 1, // Добавляем количество
+        quantity: 1,
       };
 
       const updatedCart = [...existingCart, newItem];
       setCart(updatedCart);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
     } else {
-      // Увеличиваем количество, если товар уже есть
       const updatedCart = [...existingCart];
       updatedCart[existingItemIndex].quantity += 1;
       setCart(updatedCart);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
     }
+
+    // Показать галочку
+    setShowCheckmark({ ...showCheckmark, cart: true });
+    
+    // Скрыть галочку через 2 секунды
+    setTimeout(() => {
+      setShowCheckmark({ ...showCheckmark, cart: false });
+    }, 2000);
   };
 
   const handleBuyNow = () => {
@@ -79,12 +88,19 @@ export default function ProductPage() {
       id: product.id,
       name_uz: product.name_uz,
       price: product.price,
-      main_image: product.main_image ? `https://pc.repid.uz${product.main_image}` : Imgnone.src,
+      main_image: product.main_image ? `https://pc.onepc.uz${product.main_image}` : Imgnone.src,
       quantity: 1
     };
     
-    localStorage.setItem("order", JSON.stringify([newItem])); // Сохраняем как массив с одним элементом
-    router.push("/order");
+    localStorage.setItem("order", JSON.stringify([newItem]));
+    
+    // Показать галочку перед переходом
+    setShowCheckmark({ ...showCheckmark, buyNow: true });
+    
+    // Переход после небольшой задержки, чтобы увидеть галочку
+    setTimeout(() => {
+      router.push("/order");
+    }, 500);
   };
 
   const toggleFavorite = () => {
@@ -97,7 +113,7 @@ export default function ProductPage() {
         name: product.name_uz,
         price: product.price,
         image: product.main_image
-          ? `https://pc.repid.uz${product.main_image}`
+          ? `https://pc.onepc.uz${product.main_image}`
           : Imgnone.src,
       });
     }
@@ -121,7 +137,7 @@ export default function ProductPage() {
             <img
               src={
                 product.main_image
-                  ? `https://pc.repid.uz${product.main_image}`
+                  ? `https://pc.onepc.uz${product.main_image}`
                   : Imgnone.src
               }
               alt={product.name_uz || "Mahsulot"}
@@ -178,17 +194,34 @@ export default function ProductPage() {
 
             <div className="flex items-center space-x-4 mb-6">
               <button
-                onClick={addToCart} // Теперь product доступен через замыкание
+                onClick={addToCart}
                 className="bg-[#FF0000] hover:bg-[#DD0405] duration-200 border-2 border-[#FF0000] text-white px-6 py-3 rounded-[3px] w-full flex flex-row items-center justify-center gap-4"
               >
-                Savatga
+                {showCheckmark.cart ? (
+                  <>
+                    <FaCheck className="text-white" />
+                    <span>Qo'shildi</span>
+                  </>
+                ) : (
+                  <>
+                    <FaShoppingCart />
+                    <span>Savatga</span>
+                  </>
+                )}
               </button>
 
               <button
                 onClick={handleBuyNow}
-                className="border-2 border-[#FF0000] px-6 py-2.5 hover:bg-[#FF0000]/5 duration-200 rounded-[3px] text-[#FF0000] w-full col-span-2"
+                className="border-2 border-[#FF0000] px-6 py-2.5 hover:bg-[#FF0000]/5 duration-200 rounded-[3px] text-[#FF0000] w-full col-span-2 flex items-center justify-center gap-2"
               >
-                Xarid qilish
+                {showCheckmark.buyNow ? (
+                  <>
+                    <FaCheck className="text-[#FF0000]" />
+                    <span>Bajarilmoqda...</span>
+                  </>
+                ) : (
+                  "Xarid qilish"
+                )}
               </button>
             </div>
           </div>

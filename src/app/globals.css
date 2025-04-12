@@ -118,16 +118,30 @@ body {
   background-repeat: no-repeat;
 }
 
+
 @media (min-width: 768px) {
   .about-header {
     height: 400px;
   }
 }
 
-.about-header2 {
+.about_header2 {
   height: 550;
   background-image: url('../../public/images/karusel1.jpg'); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+.discounted-products-slider .slick-slide {
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.discounted-products-slider .slick-list {
+  margin: 0 -8px;
+}
+
+
+

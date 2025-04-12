@@ -78,11 +78,11 @@ export default function LocationsPage() {
         </div>
 
         {/* Карта */}
-        <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
+        <div className="w-[800px] lg:ml-8 h-[600] rounded-lg overflow-hidden shadow-md">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d95843.32232660362!2d69.17079179999999!3d41.2994958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38aef5d5eae8b4d5%3A0x9a01f3e50f42b9e1!2sTashkent%2C%20Uzbekistan!5e0!3m2!1sen!2s!4v1711033445123"
             width="100%"
-            height="500"
+            height="100%"
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"

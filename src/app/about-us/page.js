@@ -2,7 +2,9 @@
 
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
-import "@/app/globals.css"; // ✅ Подключаем глобальные стили
+import "@/app/globals.css";
+import bg_about from "./../../../public/images/karusel1.jpg";
+import Image from "next/image";
 
 const AboutUs = () => {
   return (
@@ -37,7 +39,17 @@ const AboutUs = () => {
           </div>
 
           {/* Фоновое изображение */}
-          <div className="about-header2 mb-6 md:mb-10"></div>
+          <div className="about_header2 mb-6 md:mb-10">
+            <Image 
+              src={bg_about} 
+              alt="Background about us"
+              width={1920}  // Укажите реальную ширину изображения
+              height={1080} // Укажите реальную высоту изображения
+              className="w-full h-auto"
+              priority
+            />
+          </div>
+          
           <div className="lg:pb-12">
             <h2 className="text-xl md:text-[35px] font-semibold mb-[18px] md:mb-[25px]">
               Nima uchun OnePc'ni tanlashim kerak?
@@ -57,6 +69,7 @@ const AboutUs = () => {
               muhimdir.
             </p>
           </div>
+          
           {/* Видео блок */}
           <div className="w-full lg:grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 items-start gap-10">
             {[...Array(3)].map((_, index) => (

@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Navbar from "@/pages/Navbar";
@@ -23,84 +22,132 @@ export default function OrderPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [apiEndpoint] = useState("/api/order"); // Добавлена переменная для endpoint
 
+  // Безопасная загрузка данных из localStorage
   useEffect(() => {
-    // Загружаем данные из localStorage
     const loadCartData = () => {
       try {
-        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        const order = JSON.parse(localStorage.getItem("order") || "[]");
-        const mergedItems = [...cart, ...order].reduce((acc, item) => {
-          const existing = acc.find(i => i.id === item.id);
-          if (existing) {
-            existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
-          } else {
-            acc.push({ ...item, quantity: item.quantity || 1 });
-          }
-          return acc;
-        }, []);
+        const cart = safeParseJSON(localStorage.getItem("cart")) || [];
+        const order = safeParseJSON(localStorage.getItem("order")) || [];
+        
+        const mergedItems = [...cart, ...order]
+          .filter(item => item?.id)
+          .reduce((acc, item) => {
+            const existing = acc.find(i => i.id === item.id);
+            if (existing) {
+              existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
+            } else {
+              acc.push({
+                id: item.id,
+                name_uz: item.name_uz || item.name || "Noma'lum mahsulot",
+                price: item.price || 0,
+                quantity: item.quantity || 1,
+                main_image: validateImageUrl(item.main_image || item.image) || Imagenone.src
+              });
+            }
+            return acc;
+          }, []);
+
         setCartItems(mergedItems);
       } catch (error) {
         console.error("Error loading cart data:", error);
+        setCartItems([]);
       }
     };
 
     loadCartData();
   }, []);
 
+  const validateImageUrl = (url) => {
+    if (!url) return null;
+    try {
+      new URL(url);
+      return url;
+    } catch {
+      return null;
+    }
+  };
+
+  const safeParseJSON = (jsonString) => {
+    try {
+      return jsonString && jsonString !== "undefined" ? JSON.parse(jsonString) : null;
+    } catch (e) {
+      console.warn("Failed to parse JSON:", jsonString);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError("");
-
-    // Валидация формы
-    if (!formData.phone_number) {
-      setSubmitError("Telefon raqam kiritilishi shart");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      setSubmitError("Savat bo'sh");
-      setIsSubmitting(false);
-      return;
-    }
+    setSubmitSuccess(false);
 
     try {
-      const response = await fetch("/api/order", {
+      // Валидация формы
+      if (!formData.phone_number?.trim()) {
+        throw new Error("Telefon raqam kiritilishi shart");
+      }
+
+      if (cartItems.length === 0) {
+        throw new Error("Savat bo'sh");
+      }
+
+      // Подготовка данных
+      const orderData = {
+        ...formData,
+        cartItems: cartItems.map(item => ({
+          id: item.id,
+          name: item.name_uz,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.main_image
+        })),
+        total: cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0)
+      };
+
+      // Добавляем таймаут и AbortController
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15 секунд
+
+      const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          cartItems,
-        }),
+        body: JSON.stringify(orderData),
+        signal: controller.signal
+      }).catch(err => {
+        if (err.name === 'AbortError') {
+          throw new Error("Server javob bermadi. Iltimos, keyinroq urunib ko'ring");
+        }
+        throw new Error("Internet aloqasi yo'q. Iltimos, ulaning va qayta urunib ko'ring");
       });
 
-      // Обработка ответа
+      clearTimeout(timeout);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Server error: ${response.status}`
-        );
+        const errorText = await response.text();
+        throw new Error(errorText || `Server xatosi (${response.status})`);
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.message || "Buyurtma yuborishda xatolik");
+      if (!result.success) {
+        throw new Error(result.message || "Buyurtma qabul qilinmadi");
       }
 
-      // Успешная отправка
+      // Очистка после успешного заказа
       localStorage.removeItem("cart");
       localStorage.removeItem("order");
       setCartItems([]);
       setSubmitSuccess(true);
+
     } catch (error) {
-      console.error("Submit error:", error);
+      console.error("Buyurtma xatosi:", error);
       setSubmitError(
-        error.message || "Internet aloqasida muammo. Iltimos, qayta urunib ko'ring."
+        error.message || "Noma'lum xatolik yuz berdi. Iltimos, qayta urunib ko'ring"
       );
     } finally {
       setIsSubmitting(false);
@@ -143,21 +190,25 @@ export default function OrderPage() {
 
             {/* Поля формы */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {['first_name', 'last_name', 'phone_number', 'region', 'city', 'address', 'floor'].map((field) => (
-                <div key={field} className="mb-4">
-                  <label className="block text-sm text-gray-700 font-medium capitalize mb-1">
-                    {field.replace('_', ' ')}
-                  </label>
-                  <input
-                    type={field === 'phone_number' ? 'tel' : 'text'}
-                    name={field}
-                    value={formData[field]}
-                    onChange={(e) => setFormData({...formData, [field]: e.target.value})}
-                    className="w-full px-3 py-2 border rounded-md bg-gray-50 focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                    required={field === 'phone_number'}
-                  />
-                </div>
-              ))}
+              {Object.entries(formData).map(([field, value]) => {
+                if (field === 'method_for_reception' || field === 'comment') return null;
+                
+                return (
+                  <div key={field} className="mb-4">
+                    <label className="block text-sm text-gray-700 font-medium capitalize mb-1">
+                      {field.replace('_', ' ')}
+                    </label>
+                    <input
+                      type={field === 'phone_number' ? 'tel' : 'text'}
+                      name={field}
+                      value={value}
+                      onChange={(e) => setFormData({...formData, [field]: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-md bg-gray-50 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required={field === 'phone_number'}
+                    />
+                  </div>
+                );
+              })}
 
               {/* Метод получения */}
               <div className="mb-4">
@@ -202,16 +253,19 @@ export default function OrderPage() {
                   <div key={item.id} className="flex items-start gap-3 py-3 border-b">
                     <div className="flex-shrink-0">
                       <Image
-                        src={item.main_image || Imagenone.src}
-                        alt={item.name_uz || "Mahsulot"}
+                        src={item.main_image}
+                        alt={item.name_uz}
                         width={60}
                         height={60}
                         className="w-12 h-12 object-contain rounded-lg bg-gray-100"
+                        onError={(e) => {
+                          e.target.src = Imagenone.src;
+                        }}
                       />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-800 line-clamp-2">
-                        {item.name_uz || "Noma'lum mahsulot"}
+                        {item.name_uz}
                       </p>
                       <p className="text-red-600 font-semibold mt-1">
                         {item.price?.toLocaleString() || '0'} UZS × {item.quantity || 1}
