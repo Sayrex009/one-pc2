@@ -32,6 +32,15 @@ export default function CategoryPage() {
   });
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setFavorites(JSON.parse(localStorage.getItem("favorites")) || []);
+      setCart(JSON.parse(localStorage.getItem("cart")) || []);
+      setCompareList(JSON.parse(localStorage.getItem("compare")) || []);
+    }
+  }, []);
+  
+
+  useEffect(() => {
     setFavorites(JSON.parse(localStorage.getItem("favorites")) || []);
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
     setCompareList(JSON.parse(localStorage.getItem("compare")) || []);

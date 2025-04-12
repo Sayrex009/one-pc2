@@ -43,6 +43,7 @@ export default function ProductPage() {
     setIsFavorite(favorites.some((item) => item.id === id));
   }, [id]);
 
+
   const addToCart = () => {
     if (!product) return;
 
