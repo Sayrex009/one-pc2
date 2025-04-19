@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CategorySection = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -55,7 +56,8 @@ const CategorySection = () => {
 
   const selectedIds = [48, 54, 6, 66, 7, 2, 75];
 
-  if (loading) return <p className="text-center text-gray-500">Yuklanmoqda...</p>;
+  if (loading)
+    return <p className="text-center text-gray-500">Yuklanmoqda...</p>;
 
   return (
     <section className="pb-10 md:pb-20">
@@ -69,28 +71,25 @@ const CategorySection = () => {
           {categories
             .filter((category) => selectedIds.includes(category.id))
             .map((category) => (
-              <Link
+              <button
                 key={category.id}
-                href={`/categories/${encodeURIComponent(
-                  category.name_uz
-                )}?query=${category.id}`}
+                onClick={() => router.push(`/categories/${category.id}`)}
+                className="min-w-[184px] p-3 md:py-5 h-[56px] md:h-[166px] rounded-lg bg-[#F7F7F7] flex flex-row-reverse md:flex-col justify-between gap-2 items-center md:justify-end"
               >
-                <button className="min-w-[184px] p-3 md:py-5 h-[56px] md:h-[166px] rounded-lg bg-[#F7F7F7] flex flex-row-reverse md:flex-col justify-between gap-2 items-center md:justify-end">
-                  <div>
-                    <Image
-                      alt={category.name_uz}
-                      src={category.icon}
-                      width={80}
-                      height={80}
-                      className="w-[40px] md:w-[80px]"
-                      unoptimized
-                    />
-                  </div>
-                  <p className="text-[#2D2D2D] text-center text-xs md:text-base">
-                    {category.name_uz}
-                  </p>
-                </button>
-              </Link>
+                <div>
+                  <Image
+                    alt={category.name_uz}
+                    src={category.icon}
+                    width={80}
+                    height={80}
+                    className="w-[40px] md:w-[80px]"
+                    unoptimized
+                  />
+                </div>
+                <p className="text-[#2D2D2D] text-center text-xs md:text-base">
+                  {category.name_uz}
+                </p>
+              </button>
             ))}
         </div>
       </div>
