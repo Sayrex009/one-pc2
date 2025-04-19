@@ -300,7 +300,7 @@ export default function CategoryPage() {
                   </div>
 
                   <img
-                    src={product.main_image ? product.main_image : imgNone.src}
+                    src={product.main_image?.replace('http://', 'https://') || imgNone.src}
                     alt={product.name_uz}
                     className="w-full h-28 sm:h-36 object-contain"
                   />

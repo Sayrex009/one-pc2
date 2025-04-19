@@ -62,8 +62,8 @@ const CategorySection = () => {
   return (
     <section className="pb-10 md:pb-20">
       <div className="max-w-[1320px] w-full px-5 mx-auto">
-        <div className="flex mb-4 md:mb-[30px]">
-          <h1 className="text-[#111111] text-[18px] md:text-[30px] pb-1 pt-5 font-medium md:font-semibold md:border-b-[3px] border-b-[#E2231F]">
+        <div className="flex justify-between items-center mb-5 mt-20 md:mb-[30px]">
+          <h1 className="text-[#111] text-[18px] md:text-[30px] font-semibold border-b-[3px] border-b-[#E2231F]">
             Ommabop kategoriyalar
           </h1>
         </div>
