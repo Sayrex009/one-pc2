@@ -110,17 +110,23 @@ export default function Navbar() {
       </div>
 
       {/* Основная навигация */}
+<<<<<<< HEAD
       <div className="bg-white py-3 px-4 sm:px-6 flex flex-wrap items-center justify-between max-w-[1320px] mx-auto gap-3 sm:gap-0">
         {/* Логотип - нормальный размер на ПК, компактный на мобильных */}
         <Link
           href="/"
           className="cursor-pointer order-1 sm:order-none w-[100px] sm:w-[130px]"
         >
+=======
+      <div className="bg-white py-3 px-6 flex justify-between items-center max-w-[1320px] mx-auto">
+        <Link href="/" className="cursor-pointer">
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
           <Image
             src={onePcLogo}
             alt="OnePC Logo"
             width={130}
             height={40}
+<<<<<<< HEAD
             className="w-full h-auto"
           />
         </Link>
@@ -128,19 +134,36 @@ export default function Navbar() {
         {/* Поиск - адаптивный вариант */}
         <div className="relative order-3 sm:order-none w-full sm:w-auto sm:flex-1 sm:max-w-[500px] sm:ml-6">
           <div className="relative">
+=======
+            className="w-full h-full sm:w-[500px]"
+          />
+        </Link>
+
+        {/* Поиск */}
+        <div className="relative flex flex-wrap items-center md:ml-6 sm:ml-0 sm:w-full sm:justify-between">
+          <div className="w-full relative">
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
             <Image
               src={SearchIcon}
               alt="Search"
               width={20}
               height={20}
+<<<<<<< HEAD
               className="absolute w-4 h-4 sm:w-5 sm:h-5 left-3 top-1/2 transform -translate-y-1/2"
+=======
+              className="absolute sm:w-[12] max-md:w-[20] max-md:h-[20] lg:w-5 lg:h-5 sm:h-[12] left-3 top-1/2 transform -translate-y-1/2"
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
             />
             <input
               type="text"
               placeholder="Qidiruv..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+<<<<<<< HEAD
               className="w-full bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-9 sm:h-11 pl-10 sm:pl-11 pr-4 rounded-[8px] text-sm sm:text-base placeholder-gray-400"
+=======
+              className="w-full sm:mr-2  lg:w-[450px] bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-11 pl-11 pr-4 rounded-[8px]"
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
             />
             {showResults && (
               <div className="absolute top-full mt-2 w-full bg-white border rounded shadow-lg z-50 max-h-60 overflow-auto">
@@ -149,21 +172,34 @@ export default function Navbar() {
                     <Link
                       key={index}
                       href={`/product/${item.id}`}
+<<<<<<< HEAD
                       className="block p-2 hover:bg-gray-200 text-sm sm:text-base"
+=======
+                      className="block p-2 hover:bg-gray-200"
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                     >
                       {item.name_uz}
                     </Link>
                   ))
                 ) : (
+<<<<<<< HEAD
                   <p className="p-2 text-gray-500"></p>
+=======
+                  <p className="p-2 text-gray-500">Hech narsa topilmadi</p>
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                 )}
               </div>
             )}
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* Иконки навигации - только для ПК */}
         <div className="hidden min-[950px]:flex gap-6 xl:gap-10 text-sm lg:text-base items-center text-[#666] mr-4 order-2 sm:order-none">
+=======
+        {/* Иконки навигации */}
+        <div className="hidden min-[950px]:flex gap-10 text-sm lg:text-base items-center text-[#666] mr-4">
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
           {[
             { icon: Taqqoslash, text: "Taqqoslash", link: "/compare" },
             { icon: Buy, text: "Savatcha", link: "/cart" },
@@ -181,6 +217,7 @@ export default function Navbar() {
           ))}
         </div>
 
+<<<<<<< HEAD
         {/* Кнопка меню для мобильных */}
         <button
           className="block min-[950px]:hidden ml-2 order-2 sm:order-none"
@@ -193,6 +230,14 @@ export default function Navbar() {
             height={24}
             className="w-6 h-6"
           />
+=======
+        {/* Кнопка меню для мобильных устройств */}
+        <button
+          className="block min-[950px]:hidden ml-4"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <Image src={Menubar} alt="Menu" width={60} height={60} />
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
         </button>
       </div>
 

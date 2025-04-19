@@ -2,12 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+<<<<<<< HEAD
 import { useRouter } from "next/navigation";
+=======
+import Link from "next/link";
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
 const CategorySection = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+<<<<<<< HEAD
   const router = useRouter();
+=======
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -29,7 +36,11 @@ const CategorySection = () => {
         console.log("Категории:", data);
 
         if (Array.isArray(data)) {
+<<<<<<< HEAD
           const BASE_URL = "https://pc.onepc.uz";
+=======
+          const BASE_URL = "https://pc.onepc.uz"; 
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
           const formattedCategories = data.map((category) => ({
             ...category,
@@ -54,8 +65,11 @@ const CategorySection = () => {
     fetchCategories();
   }, []);
 
+<<<<<<< HEAD
   const selectedIds = [48, 54, 6, 66, 7, 2, 75];
 
+=======
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
   if (loading) return <p className="text-center text-gray-500">Yuklanmoqda...</p>;
 
   return (
@@ -67,6 +81,7 @@ const CategorySection = () => {
           </h1>
         </div>
         <div className="flex items-center gap-8 justify-between overflow-x-auto scrollbar-none">
+<<<<<<< HEAD
           {categories
             .filter((category) => selectedIds.includes(category.id))
             .map((category) => (
@@ -75,6 +90,16 @@ const CategorySection = () => {
                 onClick={() => router.push(`/categories/${category.id}`)}
                 className="min-w-[184px] p-3 md:py-5 h-[56px] md:h-[166px] rounded-lg bg-[#F7F7F7] flex flex-row-reverse md:flex-col justify-between gap-2 items-center md:justify-end"
               >
+=======
+          {categories.filter((_, index) => [5, 22, 23, 24, 25, 26, 27, 30].includes(index)).map((category) => (
+            <Link
+              key={category.id}
+              href={`/categories/${encodeURIComponent(
+                category.name_uz
+              )}?query=${category.id}`}
+            >
+              <button className="min-w-[184px] p-3 md:py-5 h-[56px] md:h-[166px] rounded-lg bg-[#F7F7F7] flex flex-row-reverse md:flex-col justify-between gap-2 items-center md:justify-end">
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                 <div>
                   <Image
                     alt={category.name_uz}
@@ -89,7 +114,12 @@ const CategorySection = () => {
                   {category.name_uz}
                 </p>
               </button>
+<<<<<<< HEAD
             ))}
+=======
+            </Link>
+          ))}
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
         </div>
       </div>
     </section>

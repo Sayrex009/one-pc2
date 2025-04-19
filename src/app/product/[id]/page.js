@@ -9,10 +9,9 @@ import Footer from "@/pages/Footer";
 import Imgnone from "./../../../components/icons/imagenone.png";
 
 export default function ProductPage() {
-  const params = useParams();
-  const id = Number(params?.id); // безопаснее
+  const { id } = useParams();
+  const safeId = id ? Number(id) : null; // безопасное приведение к числу
   const router = useRouter();
-
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -26,33 +25,35 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://pc.onepc.uz/api/v1/product/product/${id}/`);
-        if (!res.ok) throw new Error("Mahsulot topilmadi");
-
-        const data = await res.json();
-        setProduct(data);
+        const productRes = await fetch(
+          `https://pc.onepc.uz/api/v1/product/product/${safeId}/`
+        );
+        if (!productRes.ok) throw new Error("Mahsulot topilmadi");
+        const productData = await productRes.json();
+        setProduct(productData);
+        setLoading(false);
       } catch (error) {
         console.error("Xatolik:", error);
-      } finally {
         setLoading(false);
       }
     };
-
-    if (id) fetchData();
-  }, [id]);
+    if (safeId) fetchData();
+  }, [safeId]);
 
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setIsFavorite(favorites.some((item) => item.id === id));
-  }, [id]);
+    setIsFavorite(favorites.some((item) => item.id === safeId));
+  }, [safeId]);
 
   const addToCart = () => {
     if (!product) return;
 
     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const index = existingCart.findIndex((item) => item.id === product.id);
+    const existingItemIndex = existingCart.findIndex(
+      (item) => item.id === product.id
+    );
 
-    if (index === -1) {
+    if (existingItemIndex === -1) {
       const newItem = {
         id: product.id,
         name_uz: product.name_uz,
@@ -60,19 +61,26 @@ export default function ProductPage() {
           ? `https://pc.onepc.uz${product.main_image}`
           : Imgnone.src,
         price: product.price,
-        quantity,
+        quantity: 1,
       };
+
       const updatedCart = [...existingCart, newItem];
       setCart(updatedCart);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
     } else {
-      existingCart[index].quantity += quantity;
-      setCart(existingCart);
-      localStorage.setItem("cart", JSON.stringify(existingCart));
+      const updatedCart = [...existingCart];
+      updatedCart[existingItemIndex].quantity += 1;
+      setCart(updatedCart);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
     }
 
-    setShowCheckmark({ cart: true, buyNow: false });
-    setTimeout(() => setShowCheckmark({ cart: false, buyNow: false }), 2000);
+    // Показать галочку
+    setShowCheckmark({ ...showCheckmark, cart: true });
+
+    // Скрыть галочку через 2 секунды
+    setTimeout(() => {
+      setShowCheckmark({ ...showCheckmark, cart: false });
+    }, 2000);
   };
 
   const handleBuyNow = () => {
@@ -85,12 +93,15 @@ export default function ProductPage() {
       main_image: product.main_image
         ? `https://pc.onepc.uz${product.main_image}`
         : Imgnone.src,
-      quantity,
+      quantity: 1,
     };
 
     localStorage.setItem("order", JSON.stringify([newItem]));
-    setShowCheckmark({ cart: false, buyNow: true });
 
+    // Показать галочку перед переходом
+    setShowCheckmark({ ...showCheckmark, buyNow: true });
+
+    // Переход после небольшой задержки, чтобы увидеть галочку
     setTimeout(() => {
       router.push("/order");
     }, 500);
@@ -99,7 +110,7 @@ export default function ProductPage() {
   const toggleFavorite = () => {
     let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     if (isFavorite) {
-      favorites = favorites.filter((item) => item.id !== id);
+      favorites = favorites.filter((item) => item.id !== safeId);
     } else {
       favorites.push({
         id: product.id,
@@ -125,13 +136,12 @@ export default function ProductPage() {
     );
   }
 
-  if (!product) {
+  if (!product)
     return (
-      <h1 className="text-center text-red-500 text-xl font-semibold mt-10">
+      <h1 className="text-center text-mainColor text-2xl font-semibold mt-10">
         Mahsulot topilmadi
       </h1>
     );
-  }
 
   return (
     <div className="font-vietnam">
@@ -181,15 +191,15 @@ export default function ProductPage() {
             </p>
 
             <div className="border-t-[#4b5563] border-b-2 mt-10 mb-10">
-              <p className="font-semibold mb-4">Rang</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="items-center mb-4">
+                <p className="font-semibold mb-4">Rang</p>
                 {product.colors && product.colors.length > 0 ? (
                   product.colors.map((color, index) => (
                     <div
                       key={color.id || index}
-                      className="w-8 h-8 rounded-full border"
+                      className="w-8 h-8 rounded-full"
                       style={{ backgroundColor: color.rgba_name }}
-                    />
+                    ></div>
                   ))
                 ) : (
                   <span className="text-gray-500">Noma'lum</span>

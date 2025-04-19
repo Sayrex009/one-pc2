@@ -8,8 +8,11 @@ import Footer from "@/pages/Footer";
 import { FaShoppingCart, FaCheck } from "react-icons/fa";
 import { AiOutlineHeart, AiFillHeart, AiOutlineFilter } from "react-icons/ai";
 import { GiScales } from "react-icons/gi";
+<<<<<<< HEAD
 import OnePc_white from "./../../../components/icons/One-pc-logo.svg";
 import button_l from "./../../../components/icons/button-leave.svg";
+=======
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
 import icon_leave from "../../../components/icons/category-icon.svg";
 import "./../../../styles/category-page.css";
@@ -32,11 +35,14 @@ export default function CategoryPage() {
     cart: null,
     compare: null,
   });
+<<<<<<< HEAD
   const [filtersApplied, setFiltersApplied] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-US").format(price);
   };
+=======
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -45,6 +51,16 @@ export default function CategoryPage() {
       setCompareList(JSON.parse(localStorage.getItem("compare")) || []);
     }
   }, []);
+<<<<<<< HEAD
+=======
+  
+
+  useEffect(() => {
+    setFavorites(JSON.parse(localStorage.getItem("favorites")) || []);
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+    setCompareList(JSON.parse(localStorage.getItem("compare")) || []);
+  }, []);
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
   useEffect(() => {
     fetch("https://pc.onepc.uz/api/v1/product/category/list/")
@@ -95,6 +111,10 @@ export default function CategoryPage() {
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       setRecentlyAdded({ ...recentlyAdded, cart: product.id });
 
+<<<<<<< HEAD
+=======
+      // Reset the checkmark after 2 seconds
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
       setTimeout(() => {
         setRecentlyAdded((prev) => ({ ...prev, cart: null }));
       }, 2000);
@@ -108,6 +128,10 @@ export default function CategoryPage() {
       localStorage.setItem("compare", JSON.stringify(updatedCompareList));
       setRecentlyAdded({ ...recentlyAdded, compare: product.id });
 
+<<<<<<< HEAD
+=======
+      // Reset the checkmark after 2 seconds
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
       setTimeout(() => {
         setRecentlyAdded((prev) => ({ ...prev, compare: null }));
       }, 2000);
@@ -121,6 +145,7 @@ export default function CategoryPage() {
   const resetFilters = () => {
     setDiscount(false);
     setPriceRange([0, 1000000]);
+<<<<<<< HEAD
     setFiltersApplied(false);
   };
 
@@ -137,6 +162,16 @@ export default function CategoryPage() {
         return withinPriceRange && hasDiscount;
       })
     : products;
+=======
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const withinPriceRange =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+    const hasDiscount = discount ? product.is_discount > 0 : true;
+    return withinPriceRange && hasDiscount;
+  });
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
 
   return (
     <div>
@@ -162,6 +197,7 @@ export default function CategoryPage() {
         </button>
       </div>
 
+<<<<<<< HEAD
       {/* Mobile Filter Panel (новый дизайн как в навбаре) */}
       {showMobileFilters && (
         <div className="fixed left-0 top-0 h-full w-[80%] max-w-[400px] z-50 bg-white shadow-lg overflow-y-auto scrollbar-thin scrollbar-thumb-[#FF0000] scrollbar-track-gray-200">
@@ -235,6 +271,15 @@ export default function CategoryPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
         {/* Desktop Filter Sidebar */}
         <aside className="bg-white p-4 w-full md:w-64 lg:ml-[-115px] hidden md:block">
+=======
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
+        {/* Filter Sidebar - Hidden on mobile unless toggled */}
+        <aside
+          className={`bg-white p-4 w-full md:w-64 lg:ml-[-115px] ${
+            showMobileFilters ? "block" : "hidden"
+          } md:block lg:ml-[-105]`}
+        >
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
           <div className="flex justify-between items-center border-b pb-2 mb-3">
             <h3 className="text-lg font-semibold">Filter</h3>
             <button onClick={resetFilters} className="text-red-500 text-sm">
@@ -250,10 +295,14 @@ export default function CategoryPage() {
                 <input
                   type="checkbox"
                   checked={discount}
+<<<<<<< HEAD
                   onChange={() => {
                     setDiscount(!discount);
                     applyFilters();
                   }}
+=======
+                  onChange={() => setDiscount(!discount)}
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                   className="sr-only peer"
                 />
                 <div className="absolute inset-0 w-full h-full bg-gray-300 rounded-full transition-all duration-300 peer-checked:bg-mainColor"></div>
@@ -270,15 +319,23 @@ export default function CategoryPage() {
               min="0"
               max="1000000000"
               value={priceRange[1]}
+<<<<<<< HEAD
               onChange={(e) => {
                 setPriceRange([0, parseInt(e.target.value)]);
                 applyFilters();
               }}
+=======
+              onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
               className="w-full"
             />
             <div className="flex justify-between text-sm text-gray-600">
               <span>0</span>
+<<<<<<< HEAD
               <span>{formatPrice(priceRange[1])} UZS</span>
+=======
+              <span>{priceRange[1].toLocaleString()} UZS</span>
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
             </div>
           </div>
 
@@ -320,10 +377,18 @@ export default function CategoryPage() {
                   </h2>
 
                   <div className="relative h-10 flex items-center">
+<<<<<<< HEAD
+=======
+                    {/* Price - always visible on mobile */}
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                     <p className="text-[#0C0C0C] text-xs sm:text-sm font-semibold lg:group-hover:opacity-0 lg:group-hover:translate-x-[-10px] opacity-100 hidden lg:block">
                       {product.price.toLocaleString()} UZS
                     </p>
 
+<<<<<<< HEAD
+=======
+                    {/* Mobile price (always visible) */}
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
                     <p className="text-[#0C0C0C] text-xs sm:text-sm font-semibold lg:hidden">
                       {product.price.toLocaleString()} UZS
                     </p>
@@ -374,11 +439,15 @@ export default function CategoryPage() {
             </div>
           ) : (
             <div className="text-center py-8">
+<<<<<<< HEAD
               <p className="text-gray-600">
                 {filtersApplied
                   ? "No products match your filters"
                   : "No products available"}
               </p>
+=======
+              <p className="text-gray-600">No product available</p>
+>>>>>>> aa0b3e2b54eeaf571a6dae4d4e7f11bb82b840d3
             </div>
           )}
         </div>
