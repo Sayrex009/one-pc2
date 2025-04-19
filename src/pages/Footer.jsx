@@ -25,9 +25,7 @@ export default function Footer() {
             <Link href={'/'} >
               <Image src={OnePc} alt="logo" className="h-12" />
             </Link>
-            <p className="mt-5 text-gray-400 text-center sm:text-left">
-              Yunusobod tumani, Kichik halqa yo'li 59
-            </p>
+          
             <p className="text-[#77878F] mt-5">Ijtimoiy tarmoqlar</p>
             <div className="flex gap-4 mt-4 text-xl">
               <a href="#">
