@@ -111,18 +111,18 @@ export default function Navbar() {
       </div>
 
       {/* Основная навигация */}
-      <div className="bg-white py-3 px-6 flex justify-between items-center max-w-[1320px] mx-auto">
+      <div className="bg-white py-3 px-4 sm:px-6 flex justify-between items-center max-w-[1320px] mx-auto">
         <Link href="/" className="cursor-pointer">
           <Image
             src={onePcLogo}
             alt="OnePC Logo"
             width={130}
             height={40}
-            className="w-full h-auto sm:w-[130px]"
+            className="w-[100px] h-auto sm:w-full sm:h-full"
           />
         </Link>
 
-        {/* Поиск */}
+        {/* Поиск - изменено для мобильных */}
         <div className="relative flex flex-wrap items-center md:ml-6 sm:ml-0 sm:w-full sm:justify-between">
           <div className="w-full relative">
             <Image
@@ -130,14 +130,14 @@ export default function Navbar() {
               alt="Search"
               width={20}
               height={20}
-              className="absolute sm:w-[12] max-md:w-[20] max-md:h-[20] lg:w-5 lg:h-5 sm:h-[12] left-3 top-1/2 transform -translate-y-1/2"
+              className="absolute w-4 h-4 sm:w-5 sm:h-5 left-3 top-1/2 transform -translate-y-1/2"
             />
             <input
               type="text"
               placeholder="Qidiruv..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:mr-2 lg:w-[450px] bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-11 pl-11 pr-4 rounded-[8px]"
+              className="w-full sm:w-full lg:w-[450px] bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-9 sm:h-11 pl-10 sm:pl-11 pr-4 rounded-[8px] text-sm sm:text-base"
             />
             {showResults && (
               <div className="absolute top-full mt-2 w-full bg-white border rounded shadow-lg z-50 max-h-60 overflow-auto">
@@ -146,20 +146,20 @@ export default function Navbar() {
                     <Link
                       key={index}
                       href={`/product/${item.id}`}
-                      className="block p-2 hover:bg-gray-200"
+                      className="block p-2 hover:bg-gray-200 text-sm sm:text-base"
                     >
                       {item.name_uz}
                     </Link>
                   ))
                 ) : (
-                  <p className="p-2 text-gray-500">Hech narsa topilmadi</p>
+                  <p className="p-2 text-gray-500"></p>
                 )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Иконки навигации */}
+        {/* Иконки навигации - скрыты на мобильных */}
         <div className="hidden min-[950px]:flex gap-10 text-sm lg:text-base items-center text-[#666] mr-4">
           {[
             { icon: Taqqoslash, text: "Taqqoslash", link: "/compare" },
@@ -178,12 +178,18 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Кнопка меню для мобильных устройств */}
+        {/* Кнопка меню для мобильных устройств - уменьшен размер */}
         <button
-          className="block min-[950px]:hidden ml-4"
+          className="block min-[950px]:hidden ml-2"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <Image src={Menubar} alt="Menu" width={60} height={60} />
+          <Image
+            src={Menubar}
+            alt="Menu"
+            width={24}
+            height={24}
+            className="w-6 h-6"
+          />
         </button>
       </div>
 
