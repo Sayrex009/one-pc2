@@ -110,21 +110,24 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Основная навигация */}
-      <div className="bg-white py-3 px-4 sm:px-6 flex justify-between items-center max-w-[1320px] mx-auto">
-        <Link href="/" className="cursor-pointer">
+      <div className="bg-white py-3 px-4 sm:px-6 flex flex-wrap items-center justify-between max-w-[1320px] mx-auto gap-3 sm:gap-0">
+        {/* Логотип - нормальный размер на ПК, компактный на мобильных */}
+        <Link
+          href="/"
+          className="cursor-pointer order-1 sm:order-none w-[100px] sm:w-[130px]"
+        >
           <Image
             src={onePcLogo}
             alt="OnePC Logo"
             width={130}
             height={40}
-            className="w-[100px] h-auto sm:w-full sm:h-full"
+            className="w-full h-auto"
           />
         </Link>
 
-        {/* Поиск - изменено для мобильных */}
-        <div className="relative flex flex-wrap items-center md:ml-6 sm:ml-0 sm:w-full sm:justify-between">
-          <div className="w-full relative">
+        {/* Поиск - адаптивный вариант */}
+        <div className="relative order-3 sm:order-none w-full sm:w-auto sm:flex-1 sm:max-w-[500px] sm:ml-6">
+          <div className="relative">
             <Image
               src={SearchIcon}
               alt="Search"
@@ -137,7 +140,7 @@ export default function Navbar() {
               placeholder="Qidiruv..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-full lg:w-[450px] bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-9 sm:h-11 pl-10 sm:pl-11 pr-4 rounded-[8px] text-sm sm:text-base"
+              className="w-full bg-[#D9D9D933] outline-none ring-1 ring-[#EDEDED] focus:ring-mainColor duration-200 h-9 sm:h-11 pl-10 sm:pl-11 pr-4 rounded-[8px] text-sm sm:text-base placeholder-gray-400"
             />
             {showResults && (
               <div className="absolute top-full mt-2 w-full bg-white border rounded shadow-lg z-50 max-h-60 overflow-auto">
@@ -159,8 +162,8 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Иконки навигации - скрыты на мобильных */}
-        <div className="hidden min-[950px]:flex gap-10 text-sm lg:text-base items-center text-[#666] mr-4">
+        {/* Иконки навигации - только для ПК */}
+        <div className="hidden min-[950px]:flex gap-6 xl:gap-10 text-sm lg:text-base items-center text-[#666] mr-4 order-2 sm:order-none">
           {[
             { icon: Taqqoslash, text: "Taqqoslash", link: "/compare" },
             { icon: Buy, text: "Savatcha", link: "/cart" },
@@ -178,9 +181,9 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Кнопка меню для мобильных устройств - уменьшен размер */}
+        {/* Кнопка меню для мобильных */}
         <button
-          className="block min-[950px]:hidden ml-2"
+          className="block min-[950px]:hidden ml-2 order-2 sm:order-none"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           <Image
