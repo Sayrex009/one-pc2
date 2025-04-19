@@ -1,0 +1,32 @@
+.liked-product {
+  @apply p-3 relative h-[240px] sm:h-[310px] cursor-pointer shadow-lg duration-200 
+         sm:shadow-[0_3px_20px_#71717133] rounded-lg overflow-hidden bg-white;
+}
+
+@media (max-width: 640px) {
+  .liked-product {
+    @apply cursor-default shadow-none;
+  }
+}
+
+.liked-product img {
+  @apply transition-transform duration-200;
+}
+
+.liked-product:hover img {
+  @apply sm:scale-105;
+}
+
+.liked-product h2 {
+  @apply text-[#063A88] text-sm sm:text-base line-clamp-1 mb-2 sm:mb-3;
+}
+
+.liked-product-price p {
+  @apply text-[#0C0C0C] text-xs sm:text-lg pt-2;
+}
+
+.liked-product-buttons button {
+  @apply text-mainColor active:bg-mainColor/5 md:hover:bg-mainColor/10 
+         duration-200 flex items-center gap-2 px-2 sm:px-4 py-1 sm:py-2 
+         border sm:border-2 rounded-md sm:rounded-lg border-mainColor;
+}
